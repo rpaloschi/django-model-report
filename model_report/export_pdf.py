@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import cStringIO as StringIO
+import io
 from django.template.loader import get_template
 from django.template import Context
 from django.http import HttpResponse
@@ -19,10 +19,10 @@ def render_to_pdf(report, template_src, context_dict, pdf_encoding='UTF-8'):
     template = get_template(template_src)
     context = Context(context_dict)
     html = template.render(context)
-    result = StringIO.StringIO()
+    result = io.StringIO()
 
     from xhtml2pdf import pisa
-    pdf = pisa.CreatePDF(StringIO.StringIO(html.encode(pdf_encoding)), result, encoding=pdf_encoding)
+    pdf = pisa.CreatePDF(io.StringIO(html.encode(pdf_encoding)), result, encoding=pdf_encoding)
 
     if not pdf.err:
         response = HttpResponse(result.getvalue(), mimetype='application/pdf')

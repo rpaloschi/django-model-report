@@ -27,7 +27,7 @@ class ResolutionByYear(models.Model):
     def date_text(self):
         return u'%s - %s' % (self.date.strftime('%B %Y'), self.get_resolution_display())
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s - %s: %s' % (self.date.strftime('%B %Y'), self.get_resolution_display(), self.percentage)
 
 
@@ -43,7 +43,7 @@ class Population(models.Model):
         verbose_name = _('Population')
         verbose_name_plural = _('Populations')
 
-    def __unicode__(self):
+    def __str__(self):
         return u'With %s: %s' % (self.get_age_display().lower(), self.total())
 
 
@@ -54,7 +54,7 @@ class Company(models.Model):
         verbose_name = _('Company')
         verbose_name_plural = _("Companies")
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -66,7 +66,7 @@ class OS(models.Model):
         verbose_name = _('OS')
         verbose_name_plural = _("OS's")
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -77,7 +77,7 @@ class Support(models.Model):
         verbose_name = _('Support')
         verbose_name_plural = _("Supports")
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -91,7 +91,7 @@ class Browser(models.Model):
         verbose_name = _('Browser')
         verbose_name_plural = _('Browsers')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -106,5 +106,5 @@ class BrowserDownload(models.Model):
         verbose_name = _('Browser Download')
         verbose_name_plural = _('Browser Downloads')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.username

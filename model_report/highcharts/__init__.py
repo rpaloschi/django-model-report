@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext_lazy as _
 from model_report.highcharts.base import true, false, null, DictObject
 from model_report.highcharts.options import get_highchart_data
@@ -12,7 +11,7 @@ def is_numeric(value):
         return False
     return True
 
-from BeautifulSoup import BeautifulStoneSoup
+from bs4 import BeautifulStoneSoup
 import cgi
 
 
@@ -20,7 +19,7 @@ def HTMLEntitiesToUnicode(text):
     """
     Converts HTML entities to unicode.  For example '&amp;' becomes '&'.
     """
-    text = unicode(BeautifulStoneSoup(text, convertEntities=BeautifulStoneSoup.ALL_ENTITIES))
+    text = BeautifulStoneSoup(text, convertEntities=BeautifulStoneSoup.ALL_ENTITIES)
     return text
 
 
@@ -29,7 +28,7 @@ def unicodeToHTMLEntities(text):
     Converts unicode to HTML entities.  For example '&' becomes '&amp;'.
     """
     if text is None:
-        text = force_unicode(_('None'))
+        text = _('None')
     text = cgi.escape(text).encode('ascii', 'xmlcharrefreplace')
     return text
 
@@ -216,7 +215,7 @@ class HighchartRender(object):
     @property
     def options(self):
         from django.utils import simplejson
-        json = unicode(self.model)
+        json = self.model
         json = simplejson.dumps(json)[1:-1]
         json = json.replace("'true'", 'true')
         json = json.replace("'false'", 'false')

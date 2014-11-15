@@ -36,12 +36,14 @@ setup(name='django-model-report',
       zip_safe=False,
       long_description=long_description(),
       install_requires=[
-        'django>=1.3',
-        'reportlab',
+        'django>=1.6',
+        'reportlab==3.1.8',
         'html5lib',
-        'BeautifulSoup',
-        'xhtml2pdf',
-        'xlwt==0.7.4',
+        'beautifulsoup4==4.3.2',
+        'xlwt-future==0.8.0',
+      ],
+      dependency_links=[
+          'https://github.com/anderspetersson/xhtml2pdf/master'
       ],
       classifiers=['Framework :: Django',
                    'Development Status :: 3 - Alpha',
@@ -49,6 +51,5 @@ setup(name='django-model-report',
                    'License :: OSI Approved :: BSD License',
                    'Intended Audience :: Developers',
                    'Environment :: Web Environment',
-                   'Programming Language :: Python :: 2.5',
-                   'Programming Language :: Python :: 2.6',
-                   'Programming Language :: Python :: 2.7'])
+                   'Programming Language :: Python :: 3.2',
+                   'Programming Language :: Python :: 3.4'])

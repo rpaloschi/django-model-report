@@ -2,7 +2,6 @@
 from django import forms
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext as _
-from django.utils.encoding import force_unicode
 
 
 class RangeWidget(forms.MultiWidget):

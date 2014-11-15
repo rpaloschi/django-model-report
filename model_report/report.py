@@ -8,7 +8,6 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.fields import DateTimeField, DateField
-from django.utils.encoding import force_unicode
 from django.db.models import Q
 from django import forms
 from django.forms.models import fields_for_model
@@ -23,10 +22,7 @@ from model_report.utils import base_label, ReportValue, ReportRow
 from model_report.highcharts import HighchartRender
 from model_report.widgets import RangeField
 from model_report.export_pdf import render_to_pdf
-
-
-import arial10
-
+from model_report import arial10
 
 class FitSheetWrapper(object):
     """Try to fit columns to max size of any entry.
@@ -253,13 +249,13 @@ class ReportAdmin(object):
                     for field_lookup in field.split("__"):
                         if not pre_field:
                             pre_field = base_model._meta.get_field_by_name(field_lookup)[0]
-                            if 'ManyToManyField' in unicode(pre_field) or isinstance(pre_field, RelatedObject):
+                            if 'ManyToManyField' in pre_field or isinstance(pre_field, RelatedObject):
                                 m2mfields.append(pre_field)
                         elif isinstance(pre_field, RelatedObject):
                             base_model = pre_field.model
                             pre_field = base_model._meta.get_field_by_name(field_lookup)[0]
                         else:
-                            if 'Date' in unicode(pre_field):
+                            if 'Date' in pre_field:
                                 pre_field = pre_field
                             else:
                                 base_model = pre_field.rel.to
@@ -282,7 +278,7 @@ class ReportAdmin(object):
         if parent_report:
             self.related_inline_field = [f for f, x in self.model._meta.get_fields_with_model() if f.rel and hasattr(f.rel, 'to') and f.rel.to is self.parent_report.model][0]
             self.related_inline_accessor = self.related_inline_field.related.get_accessor_name()
-            self.related_fields = ["%s__%s" % (pfield.model._meta.module_name, attname) for pfield, attname in self.parent_report.model_fields if not isinstance(pfield, (str, unicode)) and  pfield.model == self.related_inline_field.rel.to]
+            self.related_fields = ["%s__%s" % (pfield.model._meta.module_name, attname) for pfield, attname in self.parent_report.model_fields if not isinstance(pfield, str) and  pfield.model == self.related_inline_field.rel.to]
             self.related_inline_filters = []
 
             for pfield, pattname in self.parent_report.model_fields:
@@ -291,7 +287,7 @@ class ReportAdmin(object):
                         if pattname in cattname:
                             if pfield.model == cfield.model:
                                 self.related_inline_filters.append([pattname, cattname, self.parent_report.get_fields().index(pattname)])
-                    except Exception, e:
+                    except Exception as e:
                         pass
 
 
@@ -301,11 +297,11 @@ class ReportAdmin(object):
         except:
             model_field = None
         value = self.get_grouper_text(value, groupby_field, model_field)
-        if value is None or unicode(value) == u'None':
-            if groupby_field is None or unicode(groupby_field) == u'None':
-                value = force_unicode(_('Results'))
+        if value is None or value == u'None':
+            if groupby_field is None or groupby_field == u'None':
+                value = _('Results')
             else:
-                value = force_unicode(_('Nothing'))
+                value = _('Nothing')
         return value
 
     def _get_value_text(self, index, value):
@@ -315,7 +311,7 @@ class ReportAdmin(object):
             model_field = None
 
         value = self.get_value_text(value, index, model_field)
-        if value is None or unicode(value) == u'None':
+        if value is None or value == u'None':
             value = ''
         if value == [None]:
             value = []
@@ -323,7 +319,7 @@ class ReportAdmin(object):
 
     def get_grouper_text(self, value, field, model_field):
         try:
-            if not isinstance(model_field, (str, unicode)):
+            if not isinstance(model_field, str):
                 obj = model_field.model(**{field: value})
                 if hasattr(obj, 'get_%s_display' % field):
                     value = getattr(obj, 'get_%s_display' % field)()
@@ -337,7 +333,7 @@ class ReportAdmin(object):
 
     def get_value_text(self, value, index, model_field):
         try:
-            if not isinstance(model_field, (str, unicode)):
+            if not isinstance(model_field, str):
                 obj = model_field.model(**{model_field.name: value})
                 if hasattr(obj, 'get_%s_display' % model_field.name):
                     return getattr(obj, 'get_%s_display' % model_field.name)()
@@ -419,7 +415,7 @@ class ReportAdmin(object):
             if not self.model:
                 title = _('Unnamed report')
             else:
-                title = force_unicode(self.model._meta.verbose_name_plural).lower().capitalize()
+                title = self.model._meta.verbose_name_plural.lower().capitalize()
         return title
 
     def get_render_context(self, request, extra_context={}, by_row=None):
@@ -491,7 +487,7 @@ class ReportAdmin(object):
                                     row_index += 1
                                 elif row.is_caption:
                                     for index, x in enumerate(row):
-                                        if not isinstance(x, (unicode, str)):
+                                        if not isinstance(x, str):
                                             sheet1.write(row_index, index, x.text(), stylebold)
                                         else:
                                             sheet1.write(row_index, index, x, stylebold)
@@ -659,7 +655,7 @@ class ReportAdmin(object):
                                     field.choices.insert(0, ('', '---------'))
                                     field.initial = ''
                                     
-                        field.label = force_unicode(_(field.label))
+                        field.label = _(field.label)
 
                 else:
                     if isinstance(v, (forms.BooleanField)):
@@ -709,7 +705,7 @@ class ReportAdmin(object):
         # [ 1, model_field] ]
         for index, model_field in dot_model_fields:
             model_ids = set([row[index] for row in resources])
-            if isinstance(model_field, (unicode, str)) and 'self.' in model_field:
+            if isinstance(model_field, str) and 'self.' in model_field:
                 model_qs = self.model.objects.filter(pk__in=model_ids)
             else:
                 model_qs = model_field.rel.to.objects.filter(pk__in=model_ids)
@@ -788,7 +784,7 @@ class ReportAdmin(object):
         header_row = self.get_empty_row_asdict(self.get_fields(), ReportValue(''))
         for report_total_field, fun in row_config.items():
             if hasattr(fun, 'caption'):
-                value = force_unicode(fun.caption)
+                value = fun.caption
             else:
                 value = '&nbsp;'
             header_row[report_total_field] = value
@@ -831,7 +827,7 @@ class ReportAdmin(object):
             if '__' in f:
                 for field, name in self.model_fields:
                     if name == f:
-                        if 'fields.Date' in unicode(field):
+                        if 'fields.Date' in field:
                             fname, flookup = f.rsplit('__', 1)
                             fname = fname.split('__')[-1]
                             if not flookup in ('year', 'month', 'day'):
