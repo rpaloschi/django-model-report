@@ -15,6 +15,7 @@ from django.db.models.related import RelatedObject
 from django.db.models import ForeignKey
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.forms import MultipleChoiceField
 from django.forms.widgets import SelectMultiple
 from model_report.forms import ConfigForm, GroupByForm, FilterForm
@@ -110,7 +111,13 @@ class ReportClassManager(object):
     def register(self, slug, rclass):
         if slug in self._register:
             raise ValueError('Slug already exists: %s' % slug)
-        setattr(rclass, 'slug', slug)
+
+        rclass.slug = slug
+
+        def get_report_url(self):
+            return reverse('model_report_view', args=[slug])
+        rclass.get_report_url = get_report_url
+
         self._register[slug] = rclass
 
     def get_report(self, slug):

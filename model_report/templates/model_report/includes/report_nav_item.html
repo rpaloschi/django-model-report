@@ -1,1 +1,3 @@
-{% load url from future %}<a href="{% url 'model_report_view' report.slug %}">{{ report.get_title }}</a>
+{% load url from future %}
+
+<a href="{{ report.get_report_url }}">{{ report.get_title }}</a>
